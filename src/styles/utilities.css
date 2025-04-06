@@ -1,0 +1,9 @@
+@layer utilities {
+  .clip-custom {
+    clip-path: polygon(0.125rem 4.75rem, 100% 0%, 100% 100%, 0% 100%);
+  }
+
+  .wrapper-common {
+    @apply max-w-[1440px] px-24 w-full flex;
+  }
+}
