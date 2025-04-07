@@ -1,0 +1,26 @@
+{
+  "sections": [
+    {
+      "title": "Company",
+      "links": [
+        { "name": "Home" },
+        { "name": "Order" },
+        { "name": "FAQ" },
+        { "name": "Contact" }
+      ]
+    },
+    {
+      "title": "Template",
+      "links": [
+        { "name": "Style Guide" },
+        { "name": "Changelog" },
+        { "name": "Licence" },
+        { "name": "Webflow University" }
+      ]
+    },
+    {
+      "title": "Flowbase",
+      "links": [{ "name": "More Cloneables" }]
+    }
+  ]
+}
