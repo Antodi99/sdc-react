@@ -1,45 +1,7 @@
 {
   "menuItems": [
-    { "id": 0, "name": "Desert" },
+    { "id": 0, "name": "Dessert" },
     { "id": 1, "name": "Dinner" },
     { "id": 2, "name": "Breakfast" }
-  ],
-  "cardItems": [
-    {
-      "name": "Burger Dreams",
-      "slug": "burger-dreams",
-      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      "price": 9.2
-    },
-    {
-      "name": "Burger Waldo",
-      "slug": "burger-waldo",
-      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      "price": 10.0
-    },
-    {
-      "name": "Burger Cali",
-      "slug": "burger-cali",
-      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      "price": 8.0
-    },
-    {
-      "name": "Burger Bacon Buddy",
-      "slug": "burger-bacon-buddy",
-      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      "price": 9.99
-    },
-    {
-      "name": "Burger Spicy",
-      "slug": "burger-spicy",
-      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      "price": 9.2
-    },
-    {
-      "name": "Burger Classic",
-      "slug": "burger-classic",
-      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      "price": 8.0
-    }
   ]
 }
