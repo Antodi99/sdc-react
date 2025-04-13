@@ -1,52 +1,55 @@
-import { useState, useEffect } from "react"
+import { Component } from "react"
 
 type CardProps = {
-  name: string
-  slug: string
+  title: string
+  image: string
   description: string
   price: number
+  onAddToCart: (quantity: number) => void
 }
 
-export default function Card({ name, slug, description, price }: CardProps) {
-  const [value, setValue] = useState(1)
-  const [imageSrc, setImageSrc] = useState<string | null>(null)
+type CardState = {
+  value: number
+}
 
-  useEffect(() => {
-    const loadImage = async () => {
-      try {
-        const image = await import(`@/assets/images/${slug}.png`)
-        setImageSrc(image.default)
-      } catch (error) {
-        console.error("Image not found:", error)
-        setImageSrc(null)
-      }
+export default class Card extends Component<CardProps, CardState> {
+  constructor(props: CardProps) {
+    super(props)
+    this.state = {
+      value: 1,
     }
+  }
 
-    loadImage()
-  }, [slug])
+  render() {
+    const { title, description, price, image } = this.props
+    const { value } = this.state
 
-  return (
-    <div className="flex rounded-md gap-6 bg-white p-6 border-1 border-[#35B8BE26]">
-      <img src={imageSrc || '/fallback-image.png'} alt={name} />
-      <div className="flex flex-col w-full">
-        <div className="flex justify-between items-start">
-          <h1 className="text-lg font-semibold">{name}</h1>
-          <p className="text-green font-medium">${price.toFixed(2)} USD</p>
-        </div>
-        <p className="mt-6 text-[#546285] text-sm">{description}</p>
-        <div className="flex gap-2 max-h-10 mt-4">
-          <input
-            type="number"
-            value={value}
-            onChange={(e) => setValue(e.target.value && +e.target.value >= 1 ? +e.target.value : 1)}
-            onKeyDown={(e) => ['+', '-', '.'].includes(e.key) && e.preventDefault()}
-            className="w-16 bg-white rounded-md border-1 border-gray h-full outline-none text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-          />
-          <button className="py-2 px-6 h-full bg-green rounded-md text-white hover:cursor-pointer">
-            Add to cart
-          </button>
+    return (
+      <div className="flex rounded-md h-full gap-6 bg-white p-6 border-1 border-[#35B8BE26]">
+        <img src={image} alt={title} className="size-36" />
+        <div className="flex flex-col w-full">
+          <div className="flex justify-between items-start">
+            <h1 className="text-lg font-semibold">{title}</h1>
+            <p className="text-green font-medium">${price.toFixed(2)} USD</p>
+          </div>
+          <p className="mt-6 text-[#546285] text-sm min-h-16 line-clamp-3">{description}</p>
+          <div className="flex gap-2 max-h-10 mt-4">
+            <input
+              type="number"
+              value={value}
+              onChange={(e) => this.setState({ value: e.target.value && +e.target.value >= 1 ? +e.target.value: 1 })}
+              onKeyDown={(e) => ['+', '-', '.'].includes(e.key) && e.preventDefault()}
+              className="w-16 bg-white rounded-md border-1 border-gray h-full outline-none text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            />
+            <button
+              className="py-2 px-6 h-full bg-green rounded-md text-white hover:cursor-pointer"
+              onClick={() => this.props.onAddToCart(this.state.value)}
+            >
+              Add to cart
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  )
+    )
+  }
 }
