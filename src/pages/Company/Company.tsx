@@ -1,5 +1,7 @@
-export default function Company() {
-  return (
-    <div>Company</div>
-  )
+import { Component } from "react"
+
+export default class Company extends Component {
+  render() {
+    return <div>Company</div>
+  }
 }
