@@ -7,6 +7,8 @@ type HeaderProps = {
   cartCount: number
 }
 
+const CART_SHOW_LIMIT = 10
+
 export default class Header extends Component<HeaderProps> {
   routes = [
     { name: "Home", path: "/" },
@@ -17,6 +19,7 @@ export default class Header extends Component<HeaderProps> {
 
   render() {
     const { cartCount } = this.props
+    const displayCartCount = cartCount >= CART_SHOW_LIMIT ? `${CART_SHOW_LIMIT - 1}+` : cartCount
 
     return (
       <header className="w-full h-24 flex justify-center">
@@ -36,7 +39,7 @@ export default class Header extends Component<HeaderProps> {
             </ul>
             <div className="w-14 h-14 bg-green rounded-md flex items-center justify-center relative">
               <div className="w-7 h-7 absolute top-[-10px] right-[-10px] flex items-center justify-center bg-white shadow-xl text-green text-sm rounded-full">
-                <p>{cartCount}</p>
+                <p>{displayCartCount}</p>
               </div>
               <Cart className="w-6" />
             </div>
