@@ -17,38 +17,57 @@ type MenuProps = {
 }
 
 const PAGE_LIMIT = 6
+const DEFAULT_CATEGORY = "dessert"
 
 export default function Menu({ onAddToCart }: MenuProps) {
   const [meals, setMeals] = useState<Meal[]>([])
-  const [activeItem, setActiveItem] = useState(0)
+  const [activeCategory, setActiveCategory] = useState(DEFAULT_CATEGORY)
   const [page, setPage] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
+  const [lastMeal, setLastMeal] = useState<Meal | undefined>(undefined)
 
-  async function fetchMeals() {
-    if (isLoading || !hasMore) return
-
+  async function fetchMeals(category: string, page: number, replace = false, lastItem?: Meal) {
     setIsLoading(true)
-
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/meals?page=${page}&limit=${PAGE_LIMIT + 1}`)
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/meals?category=${category}&page=${page}&limit=${PAGE_LIMIT + 1}`)
       const data = await res.json()
-
+  
       const hasMore = data.length > PAGE_LIMIT
-      const newItems = hasMore ? data.slice(0, PAGE_LIMIT) : data
-
-      setMeals((prev) => [...prev, ...newItems])
+      const currentMeals = hasMore ? data.slice(0, PAGE_LIMIT) : data
+  
+      const updatedMeals = lastItem ? [lastItem, ...currentMeals] : currentMeals
+  
+      setMeals(prev => replace ? updatedMeals : [...prev, ...updatedMeals])
       setHasMore(hasMore)
+  
+      if (hasMore) {
+        setLastMeal(data[PAGE_LIMIT]) 
+      } else {
+        setLastMeal(undefined)
+      }
     } catch (error) {
       console.error("Error fetching meals:", error)
     } finally {
       setIsLoading(false)
     }
   }
-
+   
   useEffect(() => {
-    fetchMeals()
-  }, [page])
+    fetchMeals(activeCategory, 1, true)
+    setPage(1)
+  }, [activeCategory])
+
+  function handleCategoryClick(categoryName: string) {
+    if (categoryName === activeCategory) return
+    setActiveCategory(categoryName)
+  }
+
+  function handleLoadMore() {
+    const nextPage = page + 1
+    setPage(nextPage)
+    fetchMeals(activeCategory, nextPage, false, lastMeal)
+  }  
 
   const { menuItems } = menuData
 
@@ -67,9 +86,9 @@ export default function Menu({ onAddToCart }: MenuProps) {
           {menuItems.map((item) => (
             <li
               key={item.id}
-              onClick={() => setActiveItem(item.id)}
+              onClick={() => handleCategoryClick(item.name.toLowerCase())}
               className={`px-12 py-4 border-1 rounded-md cursor-pointer transition-all duration-300 ease-in-out
-                ${activeItem === item.id
+                ${activeCategory === item.name.toLowerCase()
                   ? "bg-green border-green text-white"
                   : "border-gray-200 hover:bg-green hover:text-white hover:border-green"
                 }`}
@@ -109,7 +128,7 @@ export default function Menu({ onAddToCart }: MenuProps) {
 
         {hasMore && meals.length > 0 && (
           <button
-            onClick={() => setPage(page + 1)}
+            onClick={handleLoadMore}
             disabled={isLoading}
             className="py-3 px-8 h-full bg-green rounded-md text-white hover:cursor-pointer mt-8 disabled:opacity-50"
           >
