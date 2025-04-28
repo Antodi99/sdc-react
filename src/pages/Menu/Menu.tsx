@@ -24,28 +24,19 @@ export default function Menu({ onAddToCart }: MenuProps) {
   const [activeCategory, setActiveCategory] = useState(DEFAULT_CATEGORY)
   const [page, setPage] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
-  const [hasMore, setHasMore] = useState(true)
-  const [lastMeal, setLastMeal] = useState<Meal | undefined>(undefined)
+  const [hasMore, setHasMore] = useState(false)
 
-  async function fetchMeals(category: string, page: number, replace = false, lastItem?: Meal) {
+  async function fetchMeals(category: string, page: number, replace = false) {
     setIsLoading(true)
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/meals?category=${category}&page=${page}&limit=${PAGE_LIMIT + 1}`)
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/meals?category=${category}&page=${page}&limit=${PAGE_LIMIT}`)
       const data = await res.json()
-  
-      const hasMore = data.length > PAGE_LIMIT
-      const currentMeals = hasMore ? data.slice(0, PAGE_LIMIT) : data
-  
-      const updatedMeals = lastItem ? [lastItem, ...currentMeals] : currentMeals
-  
-      setMeals(prev => replace ? updatedMeals : [...prev, ...updatedMeals])
-      setHasMore(hasMore)
-  
-      if (hasMore) {
-        setLastMeal(data[PAGE_LIMIT]) 
-      } else {
-        setLastMeal(undefined)
-      }
+
+      const moreAvailable = data.length < PAGE_LIMIT
+      const currentMeals = moreAvailable ? data.slice(0, PAGE_LIMIT) : data
+
+      setMeals(prev => (replace ? currentMeals : [...prev, ...currentMeals]))
+      setHasMore(moreAvailable)
     } catch (error) {
       console.error("Error fetching meals:", error)
     } finally {
@@ -66,7 +57,7 @@ export default function Menu({ onAddToCart }: MenuProps) {
   function handleLoadMore() {
     const nextPage = page + 1
     setPage(nextPage)
-    fetchMeals(activeCategory, nextPage, false, lastMeal)
+    fetchMeals(activeCategory, nextPage, false)
   }  
 
   const { menuItems } = menuData
@@ -126,7 +117,7 @@ export default function Menu({ onAddToCart }: MenuProps) {
           </div>
         )}
 
-        {hasMore && meals.length > 0 && (
+        {!hasMore && meals.length > 0 && (
           <button
             onClick={handleLoadMore}
             disabled={isLoading}
