@@ -1,75 +1,56 @@
+import { useState, ReactNode } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Routes, Route, Location } from "react-router-dom"
-import { Component, ReactNode } from "react"
+import { Routes, Route, useLocation } from "react-router-dom"
 import { Home, Menu, Company, Login } from "@/pages"
 import { Header, Footer } from "@/components"
 
-type AppProps = {
-  location: Location
-}
+export default function App() {
+  const location = useLocation()
+  const [cartCount, setCartCount] = useState(0)
 
-type AppState = {
-  cartCount: number
-}
-
-export default class App extends Component<AppProps, AppState> {
-  constructor(props: AppProps) {
-    super(props)
-    this.state = { cartCount: 0 }
+  function handleAddToCart(quantity: number) {
+    setCartCount(prevCount => prevCount + quantity)
   }
 
-  handleAddToCart = (quantity: number) => {
-    this.setState((prev) => ({
-      cartCount: prev.cartCount + quantity,
-    }))
-  }
-
-  render() {
-    const { location } = this.props
-    const { cartCount } = this.state
-
-    return (
-      <div>
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Header cartCount={cartCount} />
-        </motion.div>
-
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
-            <Route path="/menu" element={<PageWrapper><Menu onAddToCart={this.handleAddToCart} /></PageWrapper>} />
-            <Route path="/company" element={<PageWrapper><Company /></PageWrapper>} />
-            <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
-          </Routes>
-        </AnimatePresence>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Footer />
-        </motion.div>
-      </div>
-    )
-  }
-}
-
-class PageWrapper extends Component<{ children: ReactNode }> {
-  render() {
-    return (
+  return (
+    <div>
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.5 }}
       >
-        {this.props.children}
+        <Header cartCount={cartCount} />
       </motion.div>
-    )
-  }
+
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
+          <Route path="/menu" element={<PageWrapper><Menu onAddToCart={handleAddToCart} /></PageWrapper>} />
+          <Route path="/company" element={<PageWrapper><Company /></PageWrapper>} />
+          <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
+        </Routes>
+      </AnimatePresence>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Footer />
+      </motion.div>
+    </div>
+  )
+}
+
+function PageWrapper({ children }: { children: ReactNode }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+    >
+      {children}
+    </motion.div>
+  )
 }
