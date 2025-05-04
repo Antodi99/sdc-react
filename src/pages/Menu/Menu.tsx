@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import { useState, useEffect } from "react"
+import { useFetch } from "@/hooks/useFetch"
 import { Card, Tooltip } from "@/components"
 import Spinner from "@/assets/icons/spinner.svg?react"
-import menuData from "./menuData.json"
+import { MENU_ITEMS, PAGE_LIMIT, DEFAULT_CATEGORY } from "./Menu.constants"
 
 type Meal = {
   id: string
@@ -16,51 +17,54 @@ type MenuProps = {
   onAddToCart: (quantity: number) => void
 }
 
-const PAGE_LIMIT = 6
-const DEFAULT_CATEGORY = "dessert"
-
 export default function Menu({ onAddToCart }: MenuProps) {
-  const [meals, setMeals] = useState<Meal[]>([])
-  const [activeCategory, setActiveCategory] = useState(DEFAULT_CATEGORY)
   const [page, setPage] = useState(1)
-  const [isLoading, setIsLoading] = useState(false)
-  const [hasMore, setHasMore] = useState(false)
+  const [activeCategory, setActiveCategory] = useState(DEFAULT_CATEGORY)
+  const [allMeals, setAllMeals] = useState<Meal[]>([])
 
-  async function fetchMeals(category: string, page: number, replace = false) {
-    setIsLoading(true)
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/meals?category=${category}&page=${page}&limit=${PAGE_LIMIT}`)
+  const { data: meals, isLoading } = useFetch<Meal[]>(
+    `meals-${activeCategory}-page-${page}`,
+    async () => {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/meals?category=${activeCategory}&page=${page}&limit=${PAGE_LIMIT}`
+      )
       const data = await res.json()
-
-      const moreAvailable = data.length < PAGE_LIMIT
-      const currentMeals = moreAvailable ? data.slice(0, PAGE_LIMIT) : data
-
-      setMeals(prev => (replace ? currentMeals : [...prev, ...currentMeals]))
-      setHasMore(moreAvailable)
-    } catch (error) {
-      console.error("Error fetching meals:", error)
-    } finally {
-      setIsLoading(false)
+      return data
+    },
+    {
+      immediate: true,
+      log: true,
+      deps: [activeCategory, page],
     }
-  }
-   
+  )
+
   useEffect(() => {
-    fetchMeals(activeCategory, 1, true)
-    setPage(1)
+    setAllMeals([])
   }, [activeCategory])
+
+  useEffect(() => {
+    if (meals && meals.length > 0) {
+      setAllMeals((prev) => {
+        const existingIds = new Set(prev.map((item) => item.id))
+        const newMeals = meals.filter((item) => !existingIds.has(item.id))
+        const updated = [...prev, ...newMeals]
+        return updated
+      })
+    }
+  }, [meals])
+
+  const hasMore = meals ? meals.length >= PAGE_LIMIT : false
 
   function handleCategoryClick(categoryName: string) {
     if (categoryName === activeCategory) return
     setActiveCategory(categoryName)
+    setPage(1)
+    setAllMeals([])
   }
 
   function handleLoadMore() {
-    const nextPage = page + 1
-    setPage(nextPage)
-    fetchMeals(activeCategory, nextPage, false)
-  }  
-
-  const { menuItems } = menuData
+    setPage((prev) => prev + 1)
+  }
 
   return (
     <main className="bg-lightGreen flex justify-center pt-40 pb-28 clip-custom">
@@ -74,7 +78,7 @@ export default function Menu({ onAddToCart }: MenuProps) {
           &nbsp;our store to place a pickup order. Fast and fresh food.
         </p>
         <ul className="flex gap-8 mt-4">
-          {menuItems.map((item) => (
+          {MENU_ITEMS.map((item) => (
             <li
               key={item.id}
               onClick={() => handleCategoryClick(item.name.toLowerCase())}
@@ -89,13 +93,13 @@ export default function Menu({ onAddToCart }: MenuProps) {
           ))}
         </ul>
 
-        {isLoading && meals.length === 0 ? (
+        {isLoading && allMeals.length === 0 ? (
           <div className="flex justify-center items-center min-h-[200px] w-full">
             <Spinner />
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-6 mt-4">
-            {meals.map((item) => (
+            {allMeals.map((item) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -117,7 +121,7 @@ export default function Menu({ onAddToCart }: MenuProps) {
           </div>
         )}
 
-        {!hasMore && meals.length > 0 && (
+        {hasMore && allMeals.length > 0 && (
           <button
             onClick={handleLoadMore}
             disabled={isLoading}
