@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 type AsyncFetcher<T> = () => Promise<T>
 
@@ -28,6 +28,7 @@ export function useFetch<T>(
   const [data, setData] = useState<T | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const isFirstRun = useRef(true)
 
   // Function to execute the fetcher
   const execute = async () => {
@@ -79,8 +80,15 @@ export function useFetch<T>(
 
   // Run the fetcher on mount or when deps change
   useEffect(() => {
-    if (immediate) execute()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (isFirstRun.current) {
+      isFirstRun.current = false
+      if (immediate) {
+        execute()
+      }
+    } else {
+      execute()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps)
 
   return {
