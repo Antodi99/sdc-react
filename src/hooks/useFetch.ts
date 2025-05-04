@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 
 type AsyncFetcher<T> = () => Promise<T>
 
-interface UseAsyncOptions {
+interface UseFetchOptions {
   immediate?: boolean         // Whether to run the fetcher immediately on mount or deps change
   cacheKey?: string           // Key to cache the data in localStorage
   log?: boolean               // Whether to log the request and response
@@ -14,7 +14,7 @@ interface UseAsyncOptions {
 export function useFetch<T>(
   key: string,                        // Key used for logging in localStorage
   fetcher: AsyncFetcher<T>,          // Async function to fetch data
-  options: UseAsyncOptions = {}      // Optional configurations
+  options: UseFetchOptions = {}      // Optional configurations
 ) {
   const {
     immediate = true,
