@@ -2,8 +2,7 @@ import { signInWithEmailAndPassword } from "firebase/auth"
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik"
 import * as Yup from "yup"
 import { useNavigate } from "react-router-dom"
-import { toast, ToastContainer } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
+import { toast } from "react-toastify"
 import { auth } from "@/plugins/firebase"
 
 type FormValues = {
@@ -120,15 +119,6 @@ export default function Login() {
           )}
         </Formik>
       </div>
-
-      <ToastContainer
-        position="bottom-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        closeOnClick
-        draggable
-        pauseOnHover
-      />
     </main>
   )
 }
