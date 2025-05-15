@@ -1,3 +1,5 @@
+import "react-toastify/dist/ReactToastify.css"
+import { ToastContainer } from "react-toastify"
 import { useState, ReactNode } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Routes, Route, useLocation } from "react-router-dom"
@@ -38,6 +40,15 @@ export default function App() {
       >
         <Footer />
       </motion.div>
+
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick
+        draggable
+        pauseOnHover
+      />
     </div>
   )
 }
