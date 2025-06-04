@@ -1,22 +1,20 @@
-import { signInWithEmailAndPassword } from "firebase/auth"
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik"
 import * as Yup from "yup"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
-import { auth } from "@/plugins/firebase"
+import { useDispatch, useSelector } from "react-redux"
+import { AppDispatch, RootState } from "@/store"
+import { loginUser } from "@/store/authSlice"
 
 type FormValues = {
   email: string
   password: string
 }
 
-type FirebaseAuthError = {
-  code: string
-  message: string
-}
-
 export default function Login() {
+  const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
+  const { loading } = useSelector((state: RootState) => state.auth)
 
   const initialValues: FormValues = { email: "", password: "" }
 
@@ -25,36 +23,32 @@ export default function Login() {
     password: Yup.string().required("Password is required"),
   })
 
-  // Handle form submission
   async function onSubmit(values: FormValues, actions: FormikHelpers<FormValues>) {
-    const { setSubmitting, setFieldError } = actions
-    try {
-      await signInWithEmailAndPassword(auth, values.email, values.password)
-      navigate("/menu")
-      toast.success("Logged in successfully!")
-    } catch (err) {
-      const { code } = err as FirebaseAuthError
+    const resultAction = await dispatch(loginUser(values))
 
-      switch (code) {
+    if (loginUser.fulfilled.match(resultAction)) {
+      toast.success("Logged in successfully!")
+      navigate("/menu")
+    } else {
+      const errorCode = resultAction.payload
+
+      switch (errorCode) {
         case "auth/invalid-credential":
-          setFieldError("email", "Incorrect email or password")
-          setFieldError("password", " ") // Just to skip showing any text for password field
+          actions.setFieldError("email", "Incorrect email or password")
+          actions.setFieldError("password", " ") // Just to skip showing any text for password field
           toast.error("Incorrect email or password. Please try again")
           break
-
         case "auth/too-many-requests":
-          setFieldError("email", "Too many login attempts. Try again later")
-          setFieldError("password", " ") // Just to skip showing any text for password field
+          actions.setFieldError("email", "Too many login attempts. Try again later")
+          actions.setFieldError("password", " ") // Just to skip showing any text for password field
           toast.error("Too many login attempts. Please wait and try again")
           break
-
         default:
-          toast.error("Unexpected error. Please try again later")
-          break
+          toast.error("Unexpected error. Try again later.")
       }
-    } finally {
-      setSubmitting(false)
     }
+
+    actions.setSubmitting(false)
   }
 
   return (
@@ -102,7 +96,7 @@ export default function Login() {
               <div className="flex justify-center gap-8 mt-4">
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || loading}
                   className="px-10 py-4 bg-green text-white rounded-md hover:opacity-70 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Submit
