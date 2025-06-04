@@ -1,6 +1,6 @@
 import "react-toastify/dist/ReactToastify.css"
 import { ToastContainer } from "react-toastify"
-import { useState, ReactNode } from "react"
+import { ReactNode } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Routes, Route, useLocation } from "react-router-dom"
 import { Home, Menu, Company, Login } from "@/pages"
@@ -8,12 +8,6 @@ import { Header, Footer } from "@/components"
 
 export default function App() {
   const location = useLocation()
-  const [cartCount, setCartCount] = useState(0)
-
-  function handleAddToCart(quantity: number) {
-    setCartCount(prevCount => prevCount + quantity)
-  }
-
   return (
     <div>
       <motion.div
@@ -21,13 +15,13 @@ export default function App() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Header cartCount={cartCount} />
+        <Header />
       </motion.div>
 
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
-          <Route path="/menu" element={<PageWrapper><Menu onAddToCart={handleAddToCart} /></PageWrapper>} />
+          <Route path="/menu" element={<PageWrapper><Menu /></PageWrapper>} />
           <Route path="/company" element={<PageWrapper><Company /></PageWrapper>} />
           <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
         </Routes>

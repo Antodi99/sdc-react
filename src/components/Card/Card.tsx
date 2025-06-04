@@ -1,15 +1,21 @@
 import { useState } from "react"
+import { useDispatch } from "react-redux"
+import { addToCart } from "@/store/cartSlice"
 
 type CardProps = {
   title: string
   image: string
   description: string
   price: number
-  onAddToCart: (quantity: number) => void
 }
 
-export default function Card({ title, image, description, price, onAddToCart }: CardProps) {
+export default function Card({ title, image, description, price }: CardProps) {
   const [value, setValue] = useState(1)
+  const dispatch = useDispatch()
+
+  function handleAddToCart() {
+    dispatch(addToCart(value))
+  }
 
   return (
     <div className="flex rounded-md h-full gap-6 bg-white p-6 border-1 border-[#35B8BE26]">
@@ -30,7 +36,7 @@ export default function Card({ title, image, description, price, onAddToCart }: 
           />
           <button
             className="py-2 px-6 h-full bg-green rounded-md text-white hover:cursor-pointer"
-            onClick={() => onAddToCart(value)}
+            onClick={handleAddToCart}
           >
             Add to cart
           </button>

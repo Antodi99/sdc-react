@@ -1,10 +1,8 @@
+import { useSelector } from "react-redux"
 import { NavLink } from "react-router-dom"
 import Logo from "@/assets/icons/logo.svg?react"
 import Cart from "@/assets/icons/cart.svg?react"
-
-type HeaderProps = {
-  cartCount: number
-}
+import { RootState } from "@/store"
 
 const CART_SHOW_LIMIT = 10
 
@@ -15,7 +13,8 @@ const routes = [
   { name: "Login", path: "/login" }
 ]
 
-export default function Header({ cartCount }: HeaderProps) {
+export default function Header() {
+  const cartCount = useSelector((state: RootState) => state.cart.count)
   const displayCartCount = cartCount >= CART_SHOW_LIMIT ? `${CART_SHOW_LIMIT - 1}+` : cartCount
 
   return (
