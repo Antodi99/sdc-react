@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { auth } from '@/plugins/firebase'
 
 type AuthState = {
@@ -32,10 +32,34 @@ export const loginUser = createAsyncThunk(
   }
 )
 
+export const logoutUser = createAsyncThunk(
+  'auth/logoutUser',
+  async (_, { rejectWithValue }) => {
+    try {
+      await signOut(auth)
+      return true
+    } catch (err) {
+      const { code } = err as FirebaseAuthError
+      return rejectWithValue(code)
+    }
+  }
+)
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {},
+  reducers: {
+    clearUser: (state) => {
+      state.user = null
+      state.loading = false
+      state.error = null
+    },
+    setUser: (state, action) => {
+      state.user = action.payload
+      state.loading = false
+      state.error = null
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.pending, (state) => {
@@ -50,7 +74,17 @@ const authSlice = createSlice({
         state.loading = false
         state.error = action.payload as string
       })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null
+        state.loading = false
+        state.error = null
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload as string
+      })
   }
 })
 
+export const { clearUser, setUser } = authSlice.actions
 export default authSlice.reducer

@@ -1,13 +1,36 @@
 import "react-toastify/dist/ReactToastify.css"
+import { useDispatch, useSelector } from "react-redux"
 import { ToastContainer } from "react-toastify"
-import { ReactNode } from "react"
+import { ReactNode, useEffect } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Routes, Route, useLocation } from "react-router-dom"
-import { Home, Menu, Company, Login } from "@/pages"
+import { Routes, Route, useLocation, Navigate } from "react-router-dom"
+import { onAuthStateChanged } from "firebase/auth"
+import { auth } from "@/plugins/firebase"
+import { setUser, clearUser } from "@/store/authSlice"
+import { RootState } from "@/store"
+import { Home, Menu, Company, Login, Order } from "@/pages"
 import { Header, Footer } from "@/components"
+import { useUserCart } from "@/hooks/useUserCart"
 
 export default function App() {
   const location = useLocation()
+  const dispatch = useDispatch()
+  const user = useSelector((state: RootState) => state.auth.user)
+  const cart = useSelector((state: RootState) => state.cart)
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser?.email) {
+        dispatch(setUser(firebaseUser.email))
+      } else {
+        dispatch(clearUser())
+      }
+    })
+    return unsubscribe
+  }, [dispatch])
+
+  useUserCart(user, cart)
+
   return (
     <div>
       <motion.div
@@ -21,9 +44,21 @@ export default function App() {
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
-          <Route path="/menu" element={<PageWrapper><Menu /></PageWrapper>} />
+          <Route path="/menu" element={
+            <PrivateRoute>
+              <PageWrapper><Menu /></PageWrapper>
+            </PrivateRoute>
+          } />
           <Route path="/company" element={<PageWrapper><Company /></PageWrapper>} />
           <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
+          <Route
+            path="/order"
+            element={
+              <PrivateRoute>
+                <PageWrapper><Order /></PageWrapper>
+              </PrivateRoute>
+            }
+          />
         </Routes>
       </AnimatePresence>
 
@@ -58,4 +93,14 @@ function PageWrapper({ children }: { children: ReactNode }) {
       {children}
     </motion.div>
   )
+}
+
+function PrivateRoute({ children }: { children: ReactNode }) {
+  const user = useSelector((state: RootState) => state.auth.user)
+
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+
+  return <>{children}</>
 }

@@ -14,7 +14,16 @@ export default function Card({ title, image, description, price }: CardProps) {
   const dispatch = useDispatch()
 
   function handleAddToCart() {
-    dispatch(addToCart(value))
+    dispatch(
+      addToCart({
+        id: title,
+        title,
+        image,
+        description,
+        price,
+        quantity: value,
+      })
+    )
   }
 
   return (
