@@ -31,10 +31,10 @@ export default function Menu() {
   }
 
   return (
-    <main className="bg-lightGreen flex justify-center pt-40 pb-28 clip-custom">
+    <main className="bg-lightGreen dark:bg-black flex justify-center pt-40 pb-28 clip-custom">
       <div className="wrapper-common flex-col justify-between items-center gap-8">
         <h1 className="text-[56px] leading-[60px] text-green">Browse our menu</h1>
-        <p className="max-w-[450px] w-full text-center text-darkGray text-lg">
+        <p className="max-w-[450px] w-full text-center text-darkGray dark:text-gray-300 text-lg">
           Use our menu to place an order online, or&nbsp;
           <Tooltip text="+37068031150">
             <span className="text-green cursor-pointer">phone</span>
@@ -50,7 +50,7 @@ export default function Menu() {
               className={`px-12 py-4 border-1 rounded-md cursor-pointer transition-all duration-300 ease-in-out
                 ${category === item.name.toLowerCase()
                   ? "bg-green border-green text-white"
-                  : "border-gray-200 hover:bg-green hover:text-white hover:border-green"}`}
+                  : "border-gray-200 hover:bg-green dark:text-white hover:text-white hover:border-green"}`}
             >
               {item.name}
             </li>

@@ -5,13 +5,16 @@ import { StrictMode } from "react"
 import App from "@/App"
 import "@/styles/index.css"
 import { store } from '@/store'
+import { ThemeProvider } from "@/context/ThemeProvider"
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <Provider store={store}>
-        <App />
-      </Provider>
-    </BrowserRouter>
+    <ThemeProvider >
+      <BrowserRouter>
+        <Provider store={store}>
+          <App />
+        </Provider>
+      </BrowserRouter>
+    </ThemeProvider>
   </StrictMode>,
 )
