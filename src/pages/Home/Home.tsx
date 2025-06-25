@@ -1,16 +1,21 @@
+import { useContext } from "react"
 import styled from "styled-components"
 import HomeImg from "@/assets/images/home.png"
 import HomeBg from "@/assets/images/home-bg.png"
 import Trustpilot from "@/assets/images/trustpilot.png"
+import { ThemeContext } from "@/context/ThemeContext"
 
-const Main = styled.main`
+const Main = styled.main<{ $dark: boolean }>`
   min-height: 820px;
-  background-image: url(${HomeBg});
+  background-image: ${({ $dark }) => ($dark ? 'none' : `url(${HomeBg})`)};
   background-size: cover;
+  background-position: center;
   display: flex;
   justify-content: center;
   padding-top: 10rem;
   padding-bottom: 7rem;
+  background-color: ${({ $dark }) => ($dark ? "#191b22" : "#ffffff")};
+  color: ${({ $dark }) => ($dark ? "#ffffff" : "#000000")};
 `
 
 const Wrapper = styled.div`
@@ -35,7 +40,7 @@ const Heading = styled.h1`
 
 const Paragraph = styled.p`
   margin-top: 2rem;
-  font-size: 1.125rem; /* 18px */
+  font-size: 1.125rem;
   color: var(--color-darkGray);
   line-height: 1.6;
 `
@@ -54,7 +59,7 @@ const Button = styled.button`
   }
 `
 
-const ReviewSection = styled.div`
+const ReviewSection = styled.div<{ $dark: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -65,6 +70,8 @@ const ReviewSection = styled.div`
   }
 
   p {
+    color: ${({ $dark }) => ($dark ? "#cccccc" : "#4a4a4a")};
+
     span {
       color: var(--color-green);
     }
@@ -72,8 +79,11 @@ const ReviewSection = styled.div`
 `
 
 export default function Home() {
+  const { theme } = useContext(ThemeContext)
+  const isDark = theme === "dark"
+
   return (
-    <Main>
+    <Main $dark={isDark}>
       <Wrapper>
         <div>
           <Heading>
@@ -85,7 +95,7 @@ export default function Home() {
             standard dummy text ever since the 1500.
           </Paragraph>
           <Button>Place an Order</Button>
-          <ReviewSection>
+          <ReviewSection $dark={isDark}>
             <img src={Trustpilot} alt="Trustpilot" />
             <p>
               <span>4.8 out of 5</span> based on 2000+ reviews

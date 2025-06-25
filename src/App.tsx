@@ -1,7 +1,7 @@
 import "react-toastify/dist/ReactToastify.css"
 import { useDispatch, useSelector } from "react-redux"
 import { ToastContainer } from "react-toastify"
-import { ReactNode, useEffect } from "react"
+import { ReactNode, useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Routes, Route, useLocation, Navigate } from "react-router-dom"
 import { onAuthStateChanged } from "firebase/auth"
@@ -13,6 +13,7 @@ import { Header, Footer } from "@/components"
 import { useUserCart } from "@/hooks/useUserCart"
 
 export default function App() {
+  const [authChecked, setAuthChecked] = useState(false)
   const location = useLocation()
   const dispatch = useDispatch()
   const user = useSelector((state: RootState) => state.auth.user)
@@ -25,11 +26,24 @@ export default function App() {
       } else {
         dispatch(clearUser())
       }
+      setAuthChecked(true)
     })
     return unsubscribe
   }, [dispatch])
 
   useUserCart(user, cart)
+
+  if (!authChecked) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex items-center justify-center h-screen"
+      >
+        <p>Loading...</p>
+      </motion.div>
+    )
+  }
 
   return (
     <div>

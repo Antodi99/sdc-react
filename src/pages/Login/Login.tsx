@@ -52,9 +52,9 @@ export default function Login() {
   }
 
   return (
-    <main className="bg-lightGreen min-h-[800px] gap-16 flex flex-col items-center justify-center">
+    <main className="bg-lightGreen dark:bg-black min-h-[800px] gap-16 flex flex-col items-center justify-center">
       <h2 className="text-green text-5xl text-center">Login</h2>
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-[500px]">
+      <div className="bg-white dark:bg-black dark:text-white dark:border-white dark:border p-8 rounded-2xl shadow-lg w-full max-w-[500px]">
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -71,7 +71,7 @@ export default function Login() {
                 <Field
                   id="email"
                   name="email"
-                  className={`w-full bg-gray-100 outline-none border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded px-3 py-2`}
+                  className={`w-full bg-gray-100 dark:bg-black outline-none border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded px-3 py-2`}
                 />
                 <div className="min-h-[20px] text-sm mt-1 text-red-500">
                   <ErrorMessage name="email" />
@@ -86,7 +86,7 @@ export default function Login() {
                   id="password"
                   name="password"
                   type="password"
-                  className={`w-full bg-gray-100 outline-none border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded px-3 py-2`}
+                  className={`w-full bg-gray-100 dark:bg-black outline-none border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded px-3 py-2`}
                 />
                 <div className="min-h-[20px] text-sm mt-1 text-red-500">
                   <ErrorMessage name="password" />
@@ -104,7 +104,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => navigate("/")}
-                  className="px-10 py-4 bg-white text-black border border-gray rounded-md hover:bg-gray-100 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-10 py-4 bg-white dark:bg-black dark:text-white text-black border border-gray rounded-md hover:bg-gray-100 hover:dark:text-black transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
